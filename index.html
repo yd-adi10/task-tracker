@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Karlo — Get Things Done</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Merienda:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Background orbs -->
+    <div class="bg-orb orb-1" aria-hidden="true"></div>
+    <div class="bg-orb orb-2" aria-hidden="true"></div>
+    <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+    <main class="app-wrapper">
+      <!-- ══ HEADER ══ -->
+      <header class="app-header">
+        <div class="header-top">
+          <div class="brand">
+            <span class="brand-icon">✦</span>
+            <h1 class="brand-name">Karlo</h1>
+            <span class="brand-sub">— get things done</span>
+          </div>
+          <div class="header-controls">
+            <button
+              class="icon-btn"
+              id="undoBtn"
+              title="Undo (Ctrl+Z)"
+              aria-label="Undo last action"
+              disabled
+            >
+              <span>↩</span>
+            </button>
+            <button
+              class="icon-btn"
+              id="redoBtn"
+              title="Redo (Ctrl+Y)"
+              aria-label="Redo action"
+              disabled
+            >
+              <span>↪</span>
+            </button>
+            <button
+              class="icon-btn"
+              id="exportBtn"
+              title="Export tasks"
+              aria-label="Export tasks"
+            >
+              <span>⬇</span>
+            </button>
+            <button
+              class="icon-btn"
+              id="soundBtn"
+              title="Toggle sound"
+              aria-label="Toggle sound notifications"
+            >
+              <span id="soundIcon">🔔</span>
+            </button>
+            <button
+              class="icon-btn"
+              id="helpBtn"
+              title="Keyboard shortcuts (?)"
+              aria-label="Show keyboard shortcuts"
+            >
+              <span>⌨</span>
+            </button>
+            <button
+              class="theme-toggle"
+              id="themeToggle"
+              aria-label="Toggle dark mode"
+            >
+              <span class="toggle-track">
+                <span class="toggle-thumb">
+                  <span class="icon-sun">☀️</span>
+                  <span class="icon-moon">🌙</span>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+          <div class="stat-chip">
+            <span class="stat-icon">📋</span>
+            <span class="stat-value" id="totalCount">0</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-chip warn">
+            <span class="stat-icon">⏳</span>
+            <span class="stat-value" id="pendingCount">0</span>
+            <span class="stat-label">Pending</span>
+          </div>
+          <div class="stat-chip success">
+            <span class="stat-icon">✅</span>
+            <span class="stat-value" id="doneCount">0</span>
+            <span class="stat-label">Done</span>
+          </div>
+          <div class="stat-chip danger" id="overdueChip" style="display: none">
+            <span class="stat-icon">🚨</span>
+            <span class="stat-value" id="overdueCount">0</span>
+            <span class="stat-label">Overdue</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ ADD TASK ══ -->
+      <section class="add-task-section">
+        <div class="input-card">
+          <!-- Row 1: Text input + Add -->
+          <div class="input-row">
+            <input
+              type="text"
+              id="taskInput"
+              class="task-input"
+              placeholder="✍️  What needs doing today?"
+              maxlength="120"
+              autocomplete="off"
+              aria-label="New task"
+            />
+            <button class="add-btn" id="addBtn" aria-label="Add task">
+              <span class="add-icon">+</span>
+              <span class="add-label">Add</span>
+            </button>
+          </div>
+          <!-- Row 2: Meta — category + due date -->
+          <div class="meta-row">
+            <div class="meta-group">
+              <label class="meta-label" for="categorySelect">🏷️ Category</label>
+              <select id="categorySelect" class="meta-select">
+                <option value="none">No Category</option>
+                <option value="work">💼 Work</option>
+                <option value="personal">🏠 Personal</option>
+                <option value="health">💪 Health</option>
+                <option value="learning">📚 Learning</option>
+                <option value="finance">💰 Finance</option>
+                <option value="shopping">🛒 Shopping</option>
+                <option value="urgent">🔥 Urgent</option>
+              </select>
+            </div>
+            <div class="meta-group">
+              <label class="meta-label" for="dueDateInput">📅 Due Date</label>
+              <input
+                type="date"
+                id="dueDateInput"
+                class="meta-select"
+                aria-label="Due date"
+              />
+            </div>
+            <div class="meta-group">
+              <label class="meta-label" for="prioritySelect">⚡ Priority</label>
+              <select id="prioritySelect" class="meta-select">
+                <option value="normal">Normal</option>
+                <option value="high">🔴 High</option>
+                <option value="medium">🟡 Medium</option>
+                <option value="low">🟢 Low</option>
+              </select>
+            </div>
+          </div>
+          <div class="char-counter" id="charCounter">
+            <span id="charCount">0</span>/120
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ FILTERS + SEARCH ══ -->
+      <div class="toolbar">
+        <nav class="filter-bar" aria-label="Filter tasks">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="pending">⏳ Pending</button>
+          <button class="filter-btn" data-filter="completed">✅ Done</button>
+          <button class="filter-btn" data-filter="overdue">🚨 Overdue</button>
+        </nav>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search tasks…"
+            aria-label="Search tasks"
+          />
+        </div>
+      </div>
+
+      <!-- Category filter pills -->
+      <div class="category-pills" id="categoryPills">
+        <button class="pill active" data-cat="all">All</button>
+        <button class="pill" data-cat="work">💼 Work</button>
+        <button class="pill" data-cat="personal">🏠 Personal</button>
+        <button class="pill" data-cat="health">💪 Health</button>
+        <button class="pill" data-cat="learning">📚 Learning</button>
+        <button class="pill" data-cat="finance">💰 Finance</button>
+        <button class="pill" data-cat="shopping">🛒 Shopping</button>
+        <button class="pill" data-cat="urgent">🔥 Urgent</button>
+      </div>
+
+      <!-- ══ TASK LIST ══ -->
+      <section class="task-section">
+        <ul class="task-list" id="taskList" role="list"></ul>
+        <div class="empty-state" id="emptyState" hidden>
+          <div class="empty-illustration">🌿</div>
+          <p class="empty-title">Nothing here yet</p>
+          <p class="empty-sub">Add your first task above ↑</p>
+        </div>
+      </section>
+
+      <!-- ══ FOOTER ══ -->
+      <footer class="app-footer">
+        <span class="footer-note" id="footerNote"></span>
+        <div class="footer-actions">
+          <button class="clear-btn" id="clearBtn" hidden>🧹 Clear done</button>
+        </div>
+      </footer>
+    </main>
+
+    <!-- ══ EDIT MODAL ══ -->
+    <div
+      class="modal-overlay"
+      id="editModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="editModalTitle"
+      hidden
+    >
+      <div class="modal-card">
+        <h2 class="modal-title" id="editModalTitle">✎ Edit Task</h2>
+        <input
+          type="text"
+          class="modal-input"
+          id="modalInput"
+          maxlength="120"
+          autocomplete="off"
+        />
+        <div class="meta-row modal-meta">
+          <div class="meta-group">
+            <label class="meta-label">🏷️ Category</label>
+            <select id="modalCategory" class="meta-select">
+              <option value="none">No Category</option>
+              <option value="work">💼 Work</option>
+              <option value="personal">🏠 Personal</option>
+              <option value="health">💪 Health</option>
+              <option value="learning">📚 Learning</option>
+              <option value="finance">💰 Finance</option>
+              <option value="shopping">🛒 Shopping</option>
+              <option value="urgent">🔥 Urgent</option>
+            </select>
+          </div>
+          <div class="meta-group">
+            <label class="meta-label">📅 Due Date</label>
+            <input type="date" id="modalDueDate" class="meta-select" />
+          </div>
+          <div class="meta-group">
+            <label class="meta-label">⚡ Priority</label>
+            <select id="modalPriority" class="meta-select">
+              <option value="normal">Normal</option>
+              <option value="high">🔴 High</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="low">🟢 Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-cancel" id="modalCancel">Cancel</button>
+          <button class="modal-save" id="modalSave">💾 Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EXPORT MODAL ══ -->
+    <div
+      class="modal-overlay"
+      id="exportModal"
+      role="dialog"
+      aria-modal="true"
+      hidden
+    >
+      <div class="modal-card">
+        <h2 class="modal-title">⬇ Export Tasks</h2>
+        <p class="modal-desc">
+          Download your tasks as a file to backup or share.
+        </p>
+        <div class="export-options">
+          <button class="export-opt-btn" id="exportJson">
+            <span class="export-icon">{ }</span>
+            <span class="export-label">JSON</span>
+            <span class="export-desc">Full data with all fields</span>
+          </button>
+          <button class="export-opt-btn" id="exportCsv">
+            <span class="export-icon">📊</span>
+            <span class="export-label">CSV</span>
+            <span class="export-desc">Spreadsheet compatible</span>
+          </button>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-cancel" id="exportClose">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ KEYBOARD SHORTCUTS MODAL ══ -->
+    <div
+      class="modal-overlay"
+      id="helpModal"
+      role="dialog"
+      aria-modal="true"
+      hidden
+    >
+      <div class="modal-card help-card">
+        <h2 class="modal-title">⌨️ Keyboard Shortcuts</h2>
+        <div class="shortcuts-grid">
+          <div class="shortcut-row">
+            <kbd>?</kbd><span>Show this help</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd>Ctrl</kbd>+<kbd>Z</kbd><span>Undo</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd>Ctrl</kbd>+<kbd>Y</kbd><span>Redo</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd>Ctrl</kbd>+<kbd>F</kbd><span>Focus search</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd>Ctrl</kbd>+<kbd>N</kbd><span>Focus new task</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd>Ctrl</kbd>+<kbd>E</kbd><span>Export tasks</span>
+          </div>
+          <div class="shortcut-row"><kbd>Enter</kbd><span>Add task</span></div>
+          <div class="shortcut-row"><kbd>Esc</kbd><span>Close modal</span></div>
+          <div class="shortcut-row">
+            <kbd>D</kbd><span>Toggle dark mode</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-save" id="helpClose">Got it! 👍</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
